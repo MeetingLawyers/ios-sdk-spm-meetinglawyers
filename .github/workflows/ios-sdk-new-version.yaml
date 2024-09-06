@@ -1,0 +1,75 @@
+name: MeetingLawyersSDK New Version
+
+on:
+  repository_dispatch:
+    types: [new_version_created]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "SDK Version"
+        required: true
+
+jobs:
+  new-version-created:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set SDK version from payload or manual input
+        run: |
+          if [ -z "${{ github.event.client_payload.tag }}" ]; then
+            echo "SDK_VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "SDK_VERSION=${{ github.event.client_payload.tag }}" >> $GITHUB_ENV
+          fi
+
+      - name: Download MeetingLawyers SDK
+        run: |
+          SDK_URL="https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/new-sdk/${{ env.SDK_VERSION }}/MeetingLawyers_${{ env.SDK_VERSION }}.zip"
+          curl -o MeetingLawyers.zip $SDK_URL
+
+      - name: Calculate checksum for MeetingLawyers SDK
+        id: checksum_meetinglawyers
+        run: |
+          CHECKSUM=$(swift package compute-checksum MeetingLawyers.zip)
+          echo "MEETINGLAWYERS_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
+
+      - name: Download MeetingLawyersNSE SDK
+        run: |
+          SDK_URL="https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/nse-sdk/${{ env.SDK_VERSION }}/MeetingLawyersNSE_${{ env.SDK_VERSION }}.zip"
+          curl -o MeetingLawyersNSE.zip $SDK_URL
+
+      - name: Calculate checksum for MeetingLawyersNSE SDK
+        id: checksum_meetinglawyersnse
+        run: |
+          CHECKSUM=$(swift package compute-checksum MeetingLawyersNSE.zip)
+          echo "MEETINGLAWYERSNSE_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
+
+      - name: Generate Package.swift from template
+        env:
+          TEMPLATE_PATH: "Template/Package.template.swift"
+          OUTPUT_PATH: "Package.swift"
+        run: |
+          # Reemplazar los placeholders en la plantilla
+          sed -e "s|{{MEETINGLAWYERS_URL}}|https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/new-sdk/${{ env.SDK_VERSION }}/MeetingLawyers_${{ env.SDK_VERSION }}.zip|g" \
+              -e "s|{{MEETINGLAWYERS_CHECKSUM}}|${{ env.MEETINGLAWYERS_CHECKSUM }}|g" \
+              -e "s|{{MEETINGLAWYERSNSE_URL}}|https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/nse-sdk/${{ env.SDK_VERSION }}/MeetingLawyersNSE_${{ env.SDK_VERSION }}.zip|g" \
+              -e "s|{{MEETINGLAWYERSNSE_CHECKSUM}}|${{ env.MEETINGLAWYERSNSE_CHECKSUM }}|g" \
+              $TEMPLATE_PATH > $OUTPUT_PATH
+          
+          # Show Package.swift result
+          echo "Generated Package.swift:"
+          cat $OUTPUT_PATH
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add Package.swift
+          git commit -m "Update Package.swift for SDK version ${{ env.SDK_VERSION }}"
+          git push origin HEAD
+
+      - name: Create new tag
+        run: |
+          git tag ${{ env.SDK_VERSION }}
+          git push origin ${{ env.SDK_VERSION }}
