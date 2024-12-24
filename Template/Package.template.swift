@@ -19,11 +19,11 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/socketio/socket.io-client-swift.git", 
-            from: "16.1.0"
+            from: "16.1.1"
         ),
         .package(
             url: "https://github.com/tus/TusKit.git", 
-            from: "3.3.0"
+            from: "3.4.1"
         ),
     ],
     targets: [
