@@ -29,7 +29,7 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "MeetingLawyers",
-            url: "https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/new-sdk/2.0.0/MeetingLawyers_2.0.0.zip",
+            url: "https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/sdk/2.0.0/MeetingLawyers_2.0.0.zip",
             checksum: "4707fba0668a8e182ee911f0a532e8609741aaf6e01a9837ed69d87e105c5eb4"
         ),
         .binaryTarget(
