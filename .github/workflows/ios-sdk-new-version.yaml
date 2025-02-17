@@ -27,7 +27,7 @@ jobs:
 
       - name: Download MeetingLawyers SDK
         run: |
-          SDK_URL="https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/new-sdk/${{ env.SDK_VERSION }}/MeetingLawyers_${{ env.SDK_VERSION }}.zip"
+          SDK_URL="https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/sdk/${{ env.SDK_VERSION }}/MeetingLawyers_${{ env.SDK_VERSION }}.zip"
           curl -o MeetingLawyers.zip $SDK_URL
 
       - name: Calculate checksum for MeetingLawyers SDK
@@ -53,7 +53,7 @@ jobs:
           OUTPUT_PATH: "Package.swift"
         run: |
           # Reemplazar los placeholders en la plantilla
-          sed -e "s|{{MEETINGLAWYERS_URL}}|https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/new-sdk/${{ env.SDK_VERSION }}/MeetingLawyers_${{ env.SDK_VERSION }}.zip|g" \
+          sed -e "s|{{MEETINGLAWYERS_URL}}|https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/sdk/${{ env.SDK_VERSION }}/MeetingLawyers_${{ env.SDK_VERSION }}.zip|g" \
               -e "s|{{MEETINGLAWYERS_CHECKSUM}}|${{ env.MEETINGLAWYERS_CHECKSUM }}|g" \
               -e "s|{{MEETINGLAWYERSNSE_URL}}|https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/nse-sdk/${{ env.SDK_VERSION }}/MeetingLawyersNSE_${{ env.SDK_VERSION }}.zip|g" \
               -e "s|{{MEETINGLAWYERSNSE_CHECKSUM}}|${{ env.MEETINGLAWYERSNSE_CHECKSUM }}|g" \
