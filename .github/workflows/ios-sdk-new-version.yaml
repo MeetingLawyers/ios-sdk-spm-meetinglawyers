@@ -64,12 +64,44 @@ jobs:
           cat $OUTPUT_PATH
 
       - name: Commit and push changes
+        if: "!contains(env.SDK_VERSION, 'beta') && !contains(env.SDK_VERSION, 'alpha')"
+        env:
+          SDK_VERSION: ${{ env.SDK_VERSION }}
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git add Package.swift
-          git commit -m "Update Package.swift for SDK version ${{ env.SDK_VERSION }}"
+
+          # Si no hay cambios, salimos sin fallar
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git commit -m "Update Package.swift for SDK version $SDK_VERSION"
           git push origin HEAD
+
+
+      # --- PRERELEASE: commit y push a rama (beta/alpha) ---
+      - name: Commit & push (prerelease → branch)
+        if: "contains(env.SDK_VERSION, 'beta') || contains(env.SDK_VERSION, 'alpha')"
+        env:
+          SDK_VERSION: ${{ env.SDK_VERSION }}
+        run: |
+          set -euo pipefail
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add Package.swift
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit (prerelease)."
+            exit 0
+          fi
+
+          BRANCH="release/prerelease-$SDK_VERSION"
+          git checkout -b "$BRANCH"
+          git commit -m "chore: prerelease Package.swift for $SDK_VERSION"
+          git push -u origin "$BRANCH"
 
       - name: Create new tag
         run: |
