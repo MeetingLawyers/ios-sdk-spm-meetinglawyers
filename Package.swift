@@ -30,12 +30,12 @@ let package = Package(
         .binaryTarget(
             name: "MeetingLawyers",
             url: "https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/sdk/2.0.17/MeetingLawyers_2.0.17.zip",
-            checksum: "c773cbc6b7c474d5cc10709ee34e905e1f7c62073ebe998fdd2152e26cc17775"
+            checksum: "767b05f7892e93c9fc87724dc52578a7fed50f267010bce2bc2905f5144b9afa"
         ),
         .binaryTarget(
             name: "MeetingLawyersNSE",
             url: "https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/nse-sdk/2.0.17/MeetingLawyersNSE_2.0.17.zip",
-            checksum: "cb3901024f09fcd30000291548927a7dc0c533823a47103f1b12f48e1c0ee2f5"
+            checksum: "e185fd809907a3b01f3167e1da6755c9e8655244d355a1dc2f1bf1c0c888fb22"
         ),
         .target(
             name: "MeetingLawyersWrapper",
