@@ -1,5 +1,8 @@
 name: MeetingLawyersSDK New Version
 
+permissions:
+  contents: write
+
 on:
   repository_dispatch:
     types: [new_version_created]
