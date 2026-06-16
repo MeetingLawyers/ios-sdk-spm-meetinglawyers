@@ -29,13 +29,13 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "MeetingLawyers",
-            url: "https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/sdk/2.0.19/MeetingLawyers_2.0.19.zip",
-            checksum: "13e7affecc66f109732c4720e2462a4e9a5c2b28bd23713d722450e7c89606e4"
+            url: "https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/sdk/2.1.0-beta01/MeetingLawyers_2.1.0-beta01.zip",
+            checksum: "4e91c15be88ff3fa811f1615c39c396cb0b91f0e71c7ecf77d3714a3ffc27041"
         ),
         .binaryTarget(
             name: "MeetingLawyersNSE",
-            url: "https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/nse-sdk/2.0.19/MeetingLawyersNSE_2.0.19.zip",
-            checksum: "01a37c06ba53bf64748643d901be529da8fcffa8d3887ccb2be5f18ee6b06d1b"
+            url: "https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/nse-sdk/2.1.0-beta01/MeetingLawyersNSE_2.1.0-beta01.zip",
+            checksum: "dace1777c11471a2f0e65a2ddcb56d38f9aa8d90479632e888bcf96ed2db7435"
         ),
         .target(
             name: "MeetingLawyersWrapper",
