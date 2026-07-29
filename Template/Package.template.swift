@@ -14,7 +14,10 @@ let package = Package(
             targets: ["MeetingLawyersWrapper"]),
         .library(
             name: "MeetingLawyersNSE",
-            targets: ["MeetingLawyersNSE"]),
+            targets: ["MeetingLawyersNSE", "MeetingLawyersCore"]),
+        .library(
+            name: "MeetingLawyersCore",
+            targets: ["MeetingLawyersCore"]),
     ],
     dependencies: [
         .package(
@@ -37,10 +40,16 @@ let package = Package(
             url: "{{MEETINGLAWYERSNSE_URL}}",
             checksum: "{{MEETINGLAWYERSNSE_CHECKSUM}}"
         ),
+        .binaryTarget(
+            name: "MeetingLawyersCore",
+            url: "{{MEETINGLAWYERSCORE_URL}}",
+            checksum: "{{MEETINGLAWYERSCORE_CHECKSUM}}"
+        ),
         .target(
             name: "MeetingLawyersWrapper",
             dependencies: [
                 "MeetingLawyers",
+                "MeetingLawyersCore",
                 .product(name: "SocketIO", package: "socket.io-client-swift"),
                 .product(name: "TUSKit", package: "TUSKit"),
             ]
