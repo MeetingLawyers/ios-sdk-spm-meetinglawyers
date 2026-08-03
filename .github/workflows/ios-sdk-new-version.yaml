@@ -50,17 +50,6 @@ jobs:
           CHECKSUM=$(swift package compute-checksum MeetingLawyersNSE.zip)
           echo "MEETINGLAWYERSNSE_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
 
-      - name: Download MeetingLawyersCore SDK
-        run: |
-          SDK_URL="https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/core-sdk/${{ env.SDK_VERSION }}/MeetingLawyersCore_${{ env.SDK_VERSION }}.zip"
-          curl -f -o MeetingLawyersCore.zip $SDK_URL
-
-      - name: Calculate checksum for MeetingLawyersCore SDK
-        id: checksum_meetinglawyerscore
-        run: |
-          CHECKSUM=$(swift package compute-checksum MeetingLawyersCore.zip)
-          echo "MEETINGLAWYERSCORE_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
-
       - name: Generate Package.swift from template
         env:
           TEMPLATE_PATH: "Template/Package.template.swift"
@@ -71,8 +60,6 @@ jobs:
               -e "s|{{MEETINGLAWYERS_CHECKSUM}}|${{ env.MEETINGLAWYERS_CHECKSUM }}|g" \
               -e "s|{{MEETINGLAWYERSNSE_URL}}|https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/nse-sdk/${{ env.SDK_VERSION }}/MeetingLawyersNSE_${{ env.SDK_VERSION }}.zip|g" \
               -e "s|{{MEETINGLAWYERSNSE_CHECKSUM}}|${{ env.MEETINGLAWYERSNSE_CHECKSUM }}|g" \
-              -e "s|{{MEETINGLAWYERSCORE_URL}}|https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/core-sdk/${{ env.SDK_VERSION }}/MeetingLawyersCore_${{ env.SDK_VERSION }}.zip|g" \
-              -e "s|{{MEETINGLAWYERSCORE_CHECKSUM}}|${{ env.MEETINGLAWYERSCORE_CHECKSUM }}|g" \
               $TEMPLATE_PATH > $OUTPUT_PATH
           
           # Show Package.swift result

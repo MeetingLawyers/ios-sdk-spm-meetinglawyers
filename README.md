@@ -14,15 +14,6 @@ This is the official MeetingLawyers iOS SDK. For more information, you can visit
 1. Open Xcode then select `Project` > `Package Dependencies` > `+`
 2. Add the repository URL `https://github.com/MeetingLawyers/ios-sdk-spm-meetinglawyers`
 
-### Products
-
-Add one library per Xcode target — each already brings `MeetingLawyersCore` with it:
-
-- `MeetingLawyers` — main SDK, for the app target.
-- `MeetingLawyersNSE` — Notification Service Extension, for the extension target.
-- `MeetingLawyersCore` — shared core. Add it **only** to link it on its own; the two libraries above
-  already include it. It is not re-exported, so `import MeetingLawyersCore` is required to use its APIs.
-
 ## Documentation
 
 You can visit the [technical documentation](https://developer.meetinglawyers.com/docs/ios/installation) for more information.
