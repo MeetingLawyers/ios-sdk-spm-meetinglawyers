@@ -50,18 +50,78 @@ jobs:
           CHECKSUM=$(swift package compute-checksum MeetingLawyersNSE.zip)
           echo "MEETINGLAWYERSNSE_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
 
+      # A release cut from a branch without MeetingLawyersCore must not make the package declare
+      # it. The SDK pipeline says so in the payload; when nobody says, ask S3 for the zip.
+      - name: Resolve whether this version ships MeetingLawyersCore
+        run: |
+          CORE_URL="https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/core-sdk/${{ env.SDK_VERSION }}/MeetingLawyersCore_${{ env.SDK_VERSION }}.zip"
+          echo "MEETINGLAWYERSCORE_URL=$CORE_URL" >> $GITHUB_ENV
+
+          DECLARED="${{ github.event.client_payload.core }}"
+          if [ -n "$DECLARED" ]; then
+            HAS_CORE="$DECLARED"
+          elif curl -fsIL -o /dev/null "$CORE_URL"; then
+            HAS_CORE=true
+          else
+            HAS_CORE=false
+          fi
+
+          echo "HAS_CORE=$HAS_CORE" >> $GITHUB_ENV
+          echo "MeetingLawyersCore in ${{ env.SDK_VERSION }}: $HAS_CORE"
+
+      - name: Download MeetingLawyersCore SDK
+        if: env.HAS_CORE == 'true'
+        run: |
+          curl -f -o MeetingLawyersCore.zip "${{ env.MEETINGLAWYERSCORE_URL }}"
+
+      - name: Calculate checksum for MeetingLawyersCore SDK
+        if: env.HAS_CORE == 'true'
+        run: |
+          CHECKSUM=$(swift package compute-checksum MeetingLawyersCore.zip)
+          echo "MEETINGLAWYERSCORE_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
+
       - name: Generate Package.swift from template
         env:
           TEMPLATE_PATH: "Template/Package.template.swift"
           OUTPUT_PATH: "Package.swift"
         run: |
+          set -euo pipefail
+
+          # Mantener o quitar las regiones de Core segun lo que publique esta version. Los patrones
+          # van anclados a la linea de comentario entera (una mencion en prosa abriria el rango) y
+          # con las barras escapadas (si no, cierran la direccion de sed).
+          BEGIN='^[[:space:]]*\/\/ CORE-BEGIN$'
+          END='^[[:space:]]*\/\/ CORE-END$'
+          if [ "${{ env.HAS_CORE }}" = "true" ]; then
+            sed -e "/$BEGIN/d" -e "/$END/d" $TEMPLATE_PATH > template.resolved
+          else
+            sed -e "/$BEGIN/,/$END/d" $TEMPLATE_PATH > template.resolved
+          fi
+
           # Reemplazar los placeholders en la plantilla
           sed -e "s|{{MEETINGLAWYERS_URL}}|https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/sdk/${{ env.SDK_VERSION }}/MeetingLawyers_${{ env.SDK_VERSION }}.zip|g" \
               -e "s|{{MEETINGLAWYERS_CHECKSUM}}|${{ env.MEETINGLAWYERS_CHECKSUM }}|g" \
               -e "s|{{MEETINGLAWYERSNSE_URL}}|https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/nse-sdk/${{ env.SDK_VERSION }}/MeetingLawyersNSE_${{ env.SDK_VERSION }}.zip|g" \
               -e "s|{{MEETINGLAWYERSNSE_CHECKSUM}}|${{ env.MEETINGLAWYERSNSE_CHECKSUM }}|g" \
-              $TEMPLATE_PATH > $OUTPUT_PATH
-          
+              -e "s|{{MEETINGLAWYERSCORE_URL}}|${{ env.MEETINGLAWYERSCORE_URL }}|g" \
+              -e "s|{{MEETINGLAWYERSCORE_CHECKSUM}}|${{ env.MEETINGLAWYERSCORE_CHECKSUM }}|g" \
+              template.resolved > $OUTPUT_PATH
+          rm -f template.resolved
+
+          # Un manifiesto truncado o con placeholders dejaria un Package.swift roto publicado
+          if ! grep -q "^let package = Package(" $OUTPUT_PATH; then
+            echo "Error: $OUTPUT_PATH is not a manifest"
+            exit 1
+          fi
+          if grep -n "{{" $OUTPUT_PATH; then
+            echo "Error: unresolved placeholders in $OUTPUT_PATH"
+            exit 1
+          fi
+          if grep -n "CORE-BEGIN\|CORE-END" $OUTPUT_PATH; then
+            echo "Error: leftover region markers in $OUTPUT_PATH"
+            exit 1
+          fi
+
           # Show Package.swift result
           echo "Generated Package.swift:"
           cat $OUTPUT_PATH
