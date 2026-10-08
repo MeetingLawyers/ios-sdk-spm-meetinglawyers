@@ -35,18 +35,18 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "MeetingLawyers",
-            url: "https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/sdk/2.2.0/MeetingLawyers_2.2.0.zip",
-            checksum: "ffb7ea5f0d877e584cf4def15dfd8f4a230ccaf0c1c50da25d4958c3bb3b78cc"
+            url: "https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/sdk/2.2.1/MeetingLawyers_2.2.1.zip",
+            checksum: "f1801d5f475014a41b1088eedc74bb6567295b98b6a9b2544158d321daa7351f"
         ),
         .binaryTarget(
             name: "MeetingLawyersNSE",
-            url: "https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/nse-sdk/2.2.0/MeetingLawyersNSE_2.2.0.zip",
-            checksum: "7fe1d4e813475a7a2f86a198ea54a4b21577d817fa1d913be3b82aaf23b0f543"
+            url: "https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/nse-sdk/2.2.1/MeetingLawyersNSE_2.2.1.zip",
+            checksum: "5836039fcd60934b6ab4d1ec314f091d104b92efce80ff1b67af2c82dd632714"
         ),
         .binaryTarget(
             name: "MeetingLawyersCore",
-            url: "https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/core-sdk/2.2.0/MeetingLawyersCore_2.2.0.zip",
-            checksum: "11e4b6297ed5ad9d3fcbe75d8f810457294849442080c1e470531abaaaa51582"
+            url: "https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/core-sdk/2.2.1/MeetingLawyersCore_2.2.1.zip",
+            checksum: "4f75a7320a5307bf259db74c67fff2d5fcd5b347cca43b5ea36ae2a6d38f9861"
         ),
         .target(
             name: "MeetingLawyersWrapper",
