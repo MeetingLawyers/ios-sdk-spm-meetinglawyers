@@ -15,6 +15,9 @@ on:
 jobs:
   new-version-created:
     runs-on: ubuntu-latest
+    env:
+      # Same bucket as the raw S3 URLs in older tags, which keep working.
+      SDK_DOWNLOAD_URL: https://sdk-download.meetinglawyers.com/ios
     steps:
       - uses: actions/checkout@v3
         with:
@@ -30,7 +33,7 @@ jobs:
 
       - name: Download MeetingLawyers SDK
         run: |
-          SDK_URL="https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/sdk/${{ env.SDK_VERSION }}/MeetingLawyers_${{ env.SDK_VERSION }}.zip"
+          SDK_URL="${{ env.SDK_DOWNLOAD_URL }}/sdk/${{ env.SDK_VERSION }}/MeetingLawyers_${{ env.SDK_VERSION }}.zip"
           curl -f -o MeetingLawyers.zip "$SDK_URL"
 
       - name: Calculate checksum for MeetingLawyers SDK
@@ -41,7 +44,7 @@ jobs:
 
       - name: Download MeetingLawyersNSE SDK
         run: |
-          SDK_URL="https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/nse-sdk/${{ env.SDK_VERSION }}/MeetingLawyersNSE_${{ env.SDK_VERSION }}.zip"
+          SDK_URL="${{ env.SDK_DOWNLOAD_URL }}/nse-sdk/${{ env.SDK_VERSION }}/MeetingLawyersNSE_${{ env.SDK_VERSION }}.zip"
           curl -f -o MeetingLawyersNSE.zip "$SDK_URL"
 
       - name: Calculate checksum for MeetingLawyersNSE SDK
@@ -52,7 +55,7 @@ jobs:
 
       - name: Download MeetingLawyersCore SDK
         run: |
-          CORE_URL="https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/core-sdk/${{ env.SDK_VERSION }}/MeetingLawyersCore_${{ env.SDK_VERSION }}.zip"
+          CORE_URL="${{ env.SDK_DOWNLOAD_URL }}/core-sdk/${{ env.SDK_VERSION }}/MeetingLawyersCore_${{ env.SDK_VERSION }}.zip"
           echo "MEETINGLAWYERSCORE_URL=$CORE_URL" >> $GITHUB_ENV
           curl -f -o MeetingLawyersCore.zip "$CORE_URL"
 
@@ -69,9 +72,9 @@ jobs:
           set -euo pipefail
 
           # Reemplazar los placeholders en la plantilla
-          sed -e "s|{{MEETINGLAWYERS_URL}}|https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/sdk/${{ env.SDK_VERSION }}/MeetingLawyers_${{ env.SDK_VERSION }}.zip|g" \
+          sed -e "s|{{MEETINGLAWYERS_URL}}|${{ env.SDK_DOWNLOAD_URL }}/sdk/${{ env.SDK_VERSION }}/MeetingLawyers_${{ env.SDK_VERSION }}.zip|g" \
               -e "s|{{MEETINGLAWYERS_CHECKSUM}}|${{ env.MEETINGLAWYERS_CHECKSUM }}|g" \
-              -e "s|{{MEETINGLAWYERSNSE_URL}}|https://meetinglawyers-ios-sdk.s3.eu-west-3.amazonaws.com/nse-sdk/${{ env.SDK_VERSION }}/MeetingLawyersNSE_${{ env.SDK_VERSION }}.zip|g" \
+              -e "s|{{MEETINGLAWYERSNSE_URL}}|${{ env.SDK_DOWNLOAD_URL }}/nse-sdk/${{ env.SDK_VERSION }}/MeetingLawyersNSE_${{ env.SDK_VERSION }}.zip|g" \
               -e "s|{{MEETINGLAWYERSNSE_CHECKSUM}}|${{ env.MEETINGLAWYERSNSE_CHECKSUM }}|g" \
               -e "s|{{MEETINGLAWYERSCORE_URL}}|${{ env.MEETINGLAWYERSCORE_URL }}|g" \
               -e "s|{{MEETINGLAWYERSCORE_CHECKSUM}}|${{ env.MEETINGLAWYERSCORE_CHECKSUM }}|g" \
